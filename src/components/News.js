@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Newsitems from "./Newsitems";
 import PropTypes from "prop-types";
+import Spinner from "./Spinner";
 
 export default class News extends Component {
   // Pasted the json data from NewsAPI org
@@ -175,20 +176,23 @@ export default class News extends Component {
   static propTypes = {
     country: PropTypes.string.isRequired,
     pageSize: PropTypes.number.isRequired,
-    category: PropTypes.number.isRequired,
+    category: PropTypes.string.isRequired,
   };
 
-  articles = [];
+ 
 
   // this constructor will run the exact current state
   constructor(prop) {
     super(); // calls the constructor of the parent class
     // console.log("i am constructor");
     this.state = {
-      articles: this.articles, // am assigning the value of the articles for future use
-      page: 1,
+      articles : [],
+      // articles: this.articles, // am assigning the value of the articles for future use
+      page: 0,
+      loading: false,
       totalResults: 0, // Need to set default
     };
+    document.title=`T-News - ${prop.category}`
   }
 
   async componentDidMount() {
@@ -201,6 +205,12 @@ export default class News extends Component {
     }&apiKey=2e87b29b92964760bce0ab3cad8e73bd&page=${
       this.state.page + 1
     }&pageSize=${this.props.pageSize}`;
+    // unless until fetch the data
+    {
+      this.setState({
+        loading: true,
+      });
+    }
     // want to get specific data
     let data = await fetch(url);
     //lets see the response
@@ -213,10 +223,18 @@ export default class News extends Component {
     this.setState({
       articles: parseData.articles,
       totalResults: parseData.totalResults,
+      // after displaying all the results laoding will be false
+      loading: false,
     });
   }
   // next button logics
   handleNext = async () => {
+    // whenever we click loading should be true until fetch all the data
+    {
+      this.setState({
+        loading: true,
+      });
+    }
     // Giving dynamic change for changing country, category
     let url = `https://newsapi.org/v2/top-headlines?country=${
       this.props.country
@@ -233,17 +251,24 @@ export default class News extends Component {
       // here display the data which we parsed
       page: this.state.page + 1,
       articles: parseData.articles,
+      loading: false,
     });
   };
   // logics for prev
   handlePrev = async () => {
+    // whenever we click loading should be true until fetch all the data
+    {
+      this.setState({
+        loading: true,
+      });
+    }
     // Giving dynamic change for changing country, category
     let url = `https://newsapi.org/v2/top-headlines?country=${
       this.props.country
     }&category=${
       this.props.category
     }&apiKey=2e87b29b92964760bce0ab3cad8e73bd&page=${
-      this.state.page + 1
+      this.state.page - 1
     }&pageSize=${this.props.pageSize}`;
 
     let data = await fetch(url);
@@ -253,6 +278,7 @@ export default class News extends Component {
       // here display the data which we parsed
       page: this.state.page - 1,
       articles: parseData.articles,
+      loading: false,
     });
   };
 
@@ -261,6 +287,8 @@ export default class News extends Component {
     return (
       <>
         <h1 className="text-center text-info-emphasis">Live News</h1>
+        {/* whenever this state is true this is going to load spinner */}
+        {this.state.loading && <Spinner />}
         <div className="container mt-3">
           <div className="row">
             {/* this can take actually take this current state 
@@ -286,7 +314,7 @@ export default class News extends Component {
           </div>
           <div className="container d-flex  justify-content-between">
             <button
-              className="btn btn-primary"
+              className="btn btn-secondary"
               type="button"
               onClick={this.handlePrev}
               disabled={this.state.pageSize <= 1}
@@ -294,7 +322,7 @@ export default class News extends Component {
               &laquo; Prev
             </button>
             <button
-              className="btn btn-primary"
+              className="btn btn-secondary"
               type="button"
               onClick={this.handleNext}
               //prev button should disable when the totalresults/ pagesize, this ceil function ensure that rounded the nearest value

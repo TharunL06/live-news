@@ -31,10 +31,10 @@ export default class Newsitems extends Component {
               <p className="card-text">
                 {description ? description.split("", 200) : "No Description"}
               </p>
-              <p>By : {author ? author : "Anonymous"}</p>
+              <p><strong>By :</strong> {author ? author : "Anonymous"}</p>
               <hr></hr>
-              <p>publishedAt: {publishedAt}</p>
-              <a href="" className="btn btn-info">
+              <p><strong>PublishedAt :</strong> {publishedAt}</p>
+              <a href={linkurl} className="btn btn-info">
                 Read more
               </a>
             </div>
