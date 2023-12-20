@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Newsitems from "./Newsitems";
+import PropTypes from "prop-types";
 
 export default class News extends Component {
   // Pasted the json data from NewsAPI org
@@ -163,21 +164,43 @@ export default class News extends Component {
   //   },
   // ];
 
+  // Setting default static props
+  static defaultProps = {
+    country: "in",
+    category: "technology",
+    pageSize: 12,
+  };
+
+  // proptypes
+  static propTypes = {
+    country: PropTypes.string.isRequired,
+    pageSize: PropTypes.number.isRequired,
+    category: PropTypes.number.isRequired,
+  };
+
   articles = [];
 
   // this constructor will run the exact current state
   constructor(prop) {
     super(); // calls the constructor of the parent class
-    console.log("i am constructor");
+    // console.log("i am constructor");
     this.state = {
       articles: this.articles, // am assigning the value of the articles for future use
+      page: 1,
+      totalResults: 0, // Need to set default
     };
   }
 
   async componentDidMount() {
     // console.log("i am mounted")
-    let url = `
-    https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=2e87b29b92964760bce0ab3cad8e73bd`;
+    // this.props.setProgress(10)
+    let url = `https://newsapi.org/v2/top-headlines?country=${
+      this.props.country
+    }&category=${
+      this.props.category
+    }&apiKey=2e87b29b92964760bce0ab3cad8e73bd&page=${
+      this.state.page + 1
+    }&pageSize=${this.props.pageSize}`;
     // want to get specific data
     let data = await fetch(url);
     //lets see the response
@@ -186,19 +209,58 @@ export default class News extends Component {
     let parseData = await data.json();
     // console.log(parseData)
     //I want to set specific state
+    // need to update the total result whenever the comdidmount called
     this.setState({
       articles: parseData.articles,
+      totalResults: parseData.totalResults,
     });
   }
-
+  // next button logics
   handleNext = async () => {
-    let url = `https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=2e87b29b92964760bce0ab3cad8e73bd`;
+    // Giving dynamic change for changing country, category
+    let url = `https://newsapi.org/v2/top-headlines?country=${
+      this.props.country
+    }&category=${
+      this.props.category
+    }&apiKey=2e87b29b92964760bce0ab3cad8e73bd&page=${
+      this.state.page + 1
+    }&pageSize=${this.props.pageSize}`;
+
+    let data = await fetch(url);
+    let parseData = await data.json();
+    this.setState({
+      // here incrementing the page from current
+      // here display the data which we parsed
+      page: this.state.page + 1,
+      articles: parseData.articles,
+    });
   };
+  // logics for prev
+  handlePrev = async () => {
+    // Giving dynamic change for changing country, category
+    let url = `https://newsapi.org/v2/top-headlines?country=${
+      this.props.country
+    }&category=${
+      this.props.category
+    }&apiKey=2e87b29b92964760bce0ab3cad8e73bd&page=${
+      this.state.page + 1
+    }&pageSize=${this.props.pageSize}`;
+
+    let data = await fetch(url);
+    let parseData = await data.json();
+    this.setState({
+      // here incrementing the page from current
+      // here display the data which we parsed
+      page: this.state.page - 1,
+      articles: parseData.articles,
+    });
+  };
+
   // Need map the this data
   render() {
     return (
       <>
-        <h1 className="text-center text-secondary">Live News</h1>
+        <h1 className="text-center text-info-emphasis">Live News</h1>
         <div className="container mt-3">
           <div className="row">
             {/* this can take actually take this current state 
@@ -227,16 +289,20 @@ export default class News extends Component {
               className="btn btn-primary"
               type="button"
               onClick={this.handlePrev}
+              disabled={this.state.pageSize <= 1}
             >
-              {" "}
               &laquo; Prev
             </button>
             <button
               className="btn btn-primary"
               type="button"
               onClick={this.handleNext}
+              //prev button should disable when the totalresults/ pagesize, this ceil function ensure that rounded the nearest value
+              disabled={
+                this.state.pageSize >=
+                Math.ceil(this.state.totalResults / this.props.pageSize)
+              }
             >
-              {" "}
               Next &raquo;
             </button>
           </div>

@@ -5,7 +5,7 @@ export default class Navbar extends Component {
     return (
       <>
         <nav
-          className="navbar navbar-expand-lg bg-body-tertiary bg-info"
+          className="navbar navbar-expand-lg bg-body-tertiary "
           data-bs-theme="dark"
         >
           <div className="container-fluid">
