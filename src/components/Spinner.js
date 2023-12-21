@@ -9,7 +9,7 @@ export default class Spinner extends Component {
             src="https://giphy.com/embed/ZO9b1ntYVJmjZlsWlm"
             width="100%"
             height="100%"
-            class="giphy-embed"
+            className="giphy-embed"
             allowFullScreen
           ></iframe>
         </div>

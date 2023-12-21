@@ -168,7 +168,7 @@ export default class News extends Component {
   // Setting default static props
   static defaultProps = {
     country: "in",
-    category: "technology",
+    category: "general",
     pageSize: 12,
   };
 
@@ -179,23 +179,24 @@ export default class News extends Component {
     category: PropTypes.string.isRequired,
   };
 
- 
-
   // this constructor will run the exact current state
   constructor(prop) {
     super(); // calls the constructor of the parent class
     // console.log("i am constructor");
     this.state = {
-      articles : [],
+      articles: [],
       // articles: this.articles, // am assigning the value of the articles for future use
       page: 0,
       loading: false,
       totalResults: 0, // Need to set default
     };
-    document.title=`T-News - ${prop.category}`
+    document.title = `T-News - ${prop.category}`;
   }
 
   async componentDidMount() {
+    
+    //here im setting the progress 10
+    this.props.setProgress(10);
     // console.log("i am mounted")
     // this.props.setProgress(10)
     let url = `https://newsapi.org/v2/top-headlines?country=${
@@ -213,10 +214,12 @@ export default class News extends Component {
     }
     // want to get specific data
     let data = await fetch(url);
+    this.props.setProgress(30); //after fetching i'm setting this
     //lets see the response
     // console.log(data)
     // covert the data in to json
     let parseData = await data.json();
+    this.props.setProgress(50); // after parsed json data setting this 50
     // console.log(parseData)
     //I want to set specific state
     // need to update the total result whenever the comdidmount called
@@ -226,9 +229,11 @@ export default class News extends Component {
       // after displaying all the results laoding will be false
       loading: false,
     });
+    this.props.setProgress(100); // once load all the data setting 100
   }
   // next button logics
   handleNext = async () => {
+    this.props.setProgress(10)
     // whenever we click loading should be true until fetch all the data
     {
       this.setState({
@@ -245,7 +250,9 @@ export default class News extends Component {
     }&pageSize=${this.props.pageSize}`;
 
     let data = await fetch(url);
+    this.props.setProgress(30)
     let parseData = await data.json();
+    this.props.setProgress(50)
     this.setState({
       // here incrementing the page from current
       // here display the data which we parsed
@@ -253,6 +260,7 @@ export default class News extends Component {
       articles: parseData.articles,
       loading: false,
     });
+    this.props.setProgress(100)
   };
   // logics for prev
   handlePrev = async () => {
