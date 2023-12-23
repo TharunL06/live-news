@@ -200,7 +200,7 @@ export default class News extends Component {
       this.props.setProgress(10);
       // console.log("i am mounted")
       // this.props.setProgress(10)
-      let url = `http://newsapi.org/v2/top-headlines?country=${
+      let url = `https://newsapi.org/v2/top-headlines?country=${
         this.props.country
       }&category=${
         this.props.category
