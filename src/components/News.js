@@ -200,7 +200,7 @@ export default class News extends Component {
       this.props.setProgress(10);
       // console.log("i am mounted")
       // this.props.setProgress(10)
-      let url = `https://newsapi.org/v2/top-headlines?country=${
+      let url = `http://newsapi.org/v2/top-headlines?country=${
         this.props.country
       }&category=${
         this.props.category
@@ -305,9 +305,9 @@ export default class News extends Component {
 
   // Need map the this data
   render() {
-    const {error,errorMessage}=this.state;
-    if(error){
-      return <div className="text-center">{errorMessage}</div>
+    const { error, errorMessage } = this.state;
+    if (error) {
+      return <div className="text-center">{errorMessage}</div>;
     }
     return (
       <>
