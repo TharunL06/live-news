@@ -305,9 +305,9 @@ export default class News extends Component {
 
   // Need map the this data
   render() {
-    const { error, errorMessage } = this.state;
-    if (error) {
-      return <div className="text-center">{errorMessage}</div>;
+    const {error,errorMessage}=this.state;
+    if(error){
+      return <div className="text-center">{errorMessage}</div>
     }
     return (
       <>
