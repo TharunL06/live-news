@@ -194,46 +194,59 @@ export default class News extends Component {
   }
 
   async componentDidMount() {
-    
-    //here im setting the progress 10
-    this.props.setProgress(10);
-    // console.log("i am mounted")
-    // this.props.setProgress(10)
-    let url = `https://newsapi.org/v2/top-headlines?country=${
-      this.props.country
-    }&category=${
-      this.props.category
-    }&apiKey=2e87b29b92964760bce0ab3cad8e73bd&page=${
-      this.state.page + 1
-    }&pageSize=${this.props.pageSize}`;
-    // unless until fetch the data
-    {
+    // for handling error I tried try catch
+    try {
+      //here im setting the progress 10
+      this.props.setProgress(10);
+      // console.log("i am mounted")
+      // this.props.setProgress(10)
+      let url = `https://newsapi.org/v2/top-headlines?country=${
+        this.props.country
+      }&category=${
+        this.props.category
+      }&apiKey=2e87b29b92964760bce0ab3cad8e73bd&page=${
+        this.state.page + 1
+      }&pageSize=${this.props.pageSize}`;
+      // unless until fetch the data
+      {
+        this.setState({
+          loading: true,
+        });
+      }
+      // want to get specific data
+      let data = await fetch(url);
+
+      if (!data.ok) {
+        throw new Error(`Failed to fetch data, Status: ${data.status}`);
+      }
+      this.props.setProgress(30); //after fetching i'm setting this
+      //lets see the response
+      // console.log(data)
+      // covert the data in to json
+      let parseData = await data.json();
+      this.props.setProgress(50); // after parsed json data setting this 50
+      // console.log(parseData)
+      //I want to set specific state
+      // need to update the total result whenever the comdidmount called
       this.setState({
-        loading: true,
+        articles: parseData.articles,
+        totalResults: parseData.totalResults,
+        // after displaying all the results laoding will be false
+        loading: false,
+      });
+      this.props.setProgress(100); // once load all the data setting 100
+    } catch (error) {
+      console.error("Error:", error.message);
+      this.setState({
+        error: true,
+        errorMessage: "Something went wrong. Please try again later",
+        loading: false,
       });
     }
-    // want to get specific data
-    let data = await fetch(url);
-    this.props.setProgress(30); //after fetching i'm setting this
-    //lets see the response
-    // console.log(data)
-    // covert the data in to json
-    let parseData = await data.json();
-    this.props.setProgress(50); // after parsed json data setting this 50
-    // console.log(parseData)
-    //I want to set specific state
-    // need to update the total result whenever the comdidmount called
-    this.setState({
-      articles: parseData.articles,
-      totalResults: parseData.totalResults,
-      // after displaying all the results laoding will be false
-      loading: false,
-    });
-    this.props.setProgress(100); // once load all the data setting 100
   }
   // next button logics
   handleNext = async () => {
-    this.props.setProgress(10)
+    this.props.setProgress(10);
     // whenever we click loading should be true until fetch all the data
     {
       this.setState({
@@ -250,9 +263,9 @@ export default class News extends Component {
     }&pageSize=${this.props.pageSize}`;
 
     let data = await fetch(url);
-    this.props.setProgress(30)
+    this.props.setProgress(30);
     let parseData = await data.json();
-    this.props.setProgress(50)
+    this.props.setProgress(50);
     this.setState({
       // here incrementing the page from current
       // here display the data which we parsed
@@ -260,7 +273,7 @@ export default class News extends Component {
       articles: parseData.articles,
       loading: false,
     });
-    this.props.setProgress(100)
+    this.props.setProgress(100);
   };
   // logics for prev
   handlePrev = async () => {
@@ -292,6 +305,10 @@ export default class News extends Component {
 
   // Need map the this data
   render() {
+    const {error,errorMessage}=this.state;
+    if(error){
+      return <div className="text-center">{errorMessage}</div>
+    }
     return (
       <>
         <h1 className="text-center text-info-emphasis">Live News</h1>
